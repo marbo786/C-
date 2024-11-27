@@ -48,19 +48,19 @@ string userresponse(string input)
 //The comparison != string::npos checks if the return value of find() is not equal to string::npos which is typically defined as the maximum possible value for an index, effectively indicating that the substring does not exist in the string.
 
 
-if (input.find("hello") != string::npos || input.find("hi") != string::npos || input.find("hey") != string::npos || input.find("yo") != string::npos)
+if (input.find("hello") != string::npos || input.find("hi") != string::npos || input.find("hey") != string::npos || input.find("yoo") != string::npos)
 {
     return "hey how may i help u today?";
 }
-else if (input.find("how are you") != std::string::npos)
+else if (input.find("how are you") != string::npos)
 {
     return "i am doing fantastic! what about you?";
 }
 else if (input.find("great") != string::npos || input.find("fine") != string::npos)
 {
-    return "That's great to hear!";
+    return "That's awesome to hear!";
 }
-else if (input.find("fun fact") != string::npos || input.find("tell me something interesting") != string::npos)
+else if (input.find("funfact") != string::npos || input.find("tell me something interesting") != string::npos)
 {
     return getRandomFunFact();
 }
@@ -68,13 +68,13 @@ else if (input.find("fun fact") != string::npos || input.find("tell me something
 // Check for sports topic
 
 else if (input.find("sports") != string::npos || input.find("football") != string::npos || 
-         input.find("soccer") != string::npos || input.find("basketball") != string::npos || 
+         input.find("cricket") != string::npos || input.find("basketball") != string::npos || 
          input.find("tennis") != string::npos || input.find("game") != string::npos)
         {
         lastTopic = "sports";
         return "I love talking about sports! Do you want to be see the latest waves in the sports industry?";
         }
-else if (lastTopic == "sports" && (input.find("yes")) != string::npos)
+else if (lastTopic == "sports" && (input.find("yes") != string::npos || input.find("sure") != string::npos))
         {
         return "You can check the latest sports news at this link: https://www.espn.com";
         }
@@ -91,7 +91,7 @@ else if (input.find("movie") != string::npos || input.find("film") != string::np
 // Acknowledging favorite movie
 
     else if (lastTopic == "movie" && (input.find("like") != string::npos || input.find("favourite") != string::npos)) {
-        return "you got good taste in music";
+        return "you have great taste in movies.";
     }
 
  // Check for music topic
@@ -111,12 +111,17 @@ else if (input.find("music") != string::npos || input.find("song") != string::np
 
  // Check for technology topic
 else if (input.find("tech") != string::npos || input.find("computer") != string::npos || 
-         input.find("programming") != string::npos || input.find("AI") != string::npos || 
+         input.find("programming") != string::npos || input.find("ai") != string::npos || 
          input.find("technology") != string::npos || input.find("gadget") != string::npos)
          {
         lastTopic = "tech";
         return "Technology is evolving so quickly! Are you interested in any specific tech trends?";
          }
+
+if (input.empty()) {
+    return "It seems you didn't type anything!";
+}
+
 
 // backup responses...
 
