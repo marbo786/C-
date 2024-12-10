@@ -3,13 +3,19 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <fstream>
+
 using namespace std;
+
+// Global variables
+vector<string> funFacts;
 
 // initialized to an empty string
 string lastTopic = "" ;
 
 // taking user input and converting it into lowercase
-string tolowercase(string input)
+// Use references in functions to avoid unnecessary copying of large data structures like strings or vectors.
+string tolowercase(string& input)
 {
 // str.begin() function is to return the iteratoring pointer to the beginning of the string
 //str.end() function is to return the iteratoring pointer to the end of the string
@@ -18,21 +24,37 @@ string tolowercase(string input)
     return input;
 
 }
-// Predefined responses and fun facts
-vector <string> funFacts = 
-{
-    "Did you know? Honey never spoils.",
-    "Bananas are berries, but strawberries aren't!",
-    "Did you know? Octopuses have three hearts.",
-    "A bolt of lightning contains enough energy to toast 100,000 slices of bread.",
-    "giki is the Only Major University With A Hiking Trail.",
-    "National Icon Abdul Qadeer Khan Was The Project Director of GIKI.",
-    "One of the Monuments in giki is Dedicated to a Pilot Who Died Saving the Institute.",
-    "Nigar Johar - Only Female General in Pakistan Army History is from swabi."
-};
+
+
+// chat logging
+
+void logChat(const string& user, const string& bot) {
+    fstream chatfile("chat_history.txt", ios::app);
+    if (chatfile.is_open()) {
+        chatfile << "User: " << user << endl;
+        chatfile << "Marbo: " << bot << endl << endl;
+        chatfile.close();
+    } else {
+        cerr << "Error: Unable to open chat history file." << endl; // cerr is for aesthetic purpose
+    }
+}
+// Function to load fun facts from a file
+
+void loadFunFacts(vector<string>& facts) {
+    ifstream factsFile("fun_facts.txt");
+    string line;
+    if (factsFile.is_open()) {
+        while (getline(factsFile, line)) {
+            facts.push_back(line);
+        }
+        factsFile.close();
+    } else {
+        cerr << "Error: Unable to open fun facts file." << endl;
+    }
+}
 
 // functionality 1:
-string getRandomFunFact()
+string getRandomFunFact(const vector<string>& funFacts)
 {
     return funFacts[rand() % funFacts.size()];
 }
@@ -62,7 +84,7 @@ else if (input.find("great") != string::npos || input.find("fine") != string::np
 }
 else if (input.find("funfact") != string::npos || input.find("tell me something interesting") != string::npos)
 {
-    return getRandomFunFact();
+    return getRandomFunFact(funFacts);
 }
         
 // Check for sports topic
@@ -125,7 +147,7 @@ if (input.empty()) {
 
 // backup responses...
 
-vector<string> backupresponse = 
+string backupresponse[] = 
 {
     "I'm not quite sure I understand.",
     "Could you rephrase that?",
@@ -134,17 +156,22 @@ vector<string> backupresponse =
 };
 
 // If no keywords match provide a random  response
-    return backupresponse[rand() % backupresponse.size()];
+    int randomIndex = rand() % 4; 
+    return backupresponse[randomIndex];
 }
 
-int main() {
+int main() 
+{
     // Seed for random number generation for varied responses
     srand(time(0));  
+
+    loadFunFacts(funFacts);
 
     string userinput;
     cout<<"hi my name is marbo and i am ur chatbot!, type 'bye' to exit.\n";
 
-    while (true){
+    while (true)
+    {
 // making it nice for the user in the terminal
         cout<<"you: ";
         getline(cin,userinput);
@@ -155,8 +182,12 @@ int main() {
         break;
     }
     string response = userresponse(userinput);
-    cout<<"marbo: "<<response<<endl;
-
+    
+    cout << "marbo: " << response << endl;
+    
+    // logging the chat
+    logChat(userinput, response);
+    
     }
 return 0;
 }

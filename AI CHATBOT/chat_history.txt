@@ -1,0 +1,15 @@
+User: yoo
+Marbo: hey how may i help u today?
+
+User: whatsupp
+Marbo: Hmm... I am not sure how to respond to that yet.
+
+User: reponse
+Marbo: Could you rephrase that?
+
+User: logchat
+Marbo: I'm still learning! Can you try asking in a different way?
+
+User: ok bye
+Marbo: I'm still learning! Can you try asking in a different way?
+
