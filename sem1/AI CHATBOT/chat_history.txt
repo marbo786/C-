@@ -1,0 +1,186 @@
+User: yoo
+Marbo: hey how may i help u today?
+
+User: whatsupp
+Marbo: Hmm... I am not sure how to respond to that yet.
+
+User: reponse
+Marbo: Could you rephrase that?
+
+User: logchat
+Marbo: I'm still learning! Can you try asking in a different way?
+
+User: ok bye
+Marbo: I'm still learning! Can you try asking in a different way?
+
+User: hello
+Marbo: hey how may i help u today?
+
+User: how are you
+Marbo: i am doing fantastic! what about you?
+
+User: i am doing great too
+Marbo: That's awesome to hear!
+
+User: hey can you tell me a funfact?
+Marbo: hey how may i help u today?
+
+User: cd "c:\users\hp\desktop\c++\ai chatbot\" ; if ($?) { g++ chatbot.cpp -o chatbot } ; if ($?) { .\chatbot }
+Marbo: Technology is evolving so quickly! Are you interested in any specific tech trends?
+
+User: cd "c:\users\hp\desktop\c++\ai chatbot\" ; if ($?) { g++ chatbot.cpp -o chatbot } ; if ($?) { .\chatbot }
+Marbo: Technology is evolving so quickly! Are you interested in any specific tech trends?
+
+User: cd "c:\users\hp\desktop\c++\ai chatbot\" ; if ($?) { g++ chatbot.cpp -o chatbot } ; if ($?) { .\chatbot }
+Marbo: Technology is evolving so quickly! Are you interested in any specific tech trends?
+
+User: cd "c:\users\hp\desktop\c++\ai chatbot\" ; if ($?) { g++ chatbot.cpp -o chatbot } ; if ($?) { .\chatbot }
+Marbo: Technology is evolving so quickly! Are you interested in any specific tech trends?
+
+User: hello
+Marbo: hey how may i help u today?
+
+User: how are you
+Marbo: i am doing fantastic! what about you?
+
+User: i am doing great too
+Marbo: That's awesome to hear!
+
+User: can you understand all the input i say?
+Marbo: I'm not quite sure I understand.
+
+User: 
+Marbo: It seems you didn't type anything!
+
+User: ok tell me something interesting
+Marbo: hey how may i help u today?
+
+User: hello
+Marbo: hey how may i help u today?
+
+User: how are you
+Marbo: i am doing fantastic! what about you?
+
+User: i am doing great too
+Marbo: That's awesome to hear!
+
+User: can you understand all the input i provide to you??
+Marbo: I'm not quite sure I understand.
+
+User: ok but can you tell me a funfact
+Marbo: "Nigar Johar - Only Female General in Pakistan Army History is from swabi.
+
+User: cool tell me another funfact
+Marbo: "giki is the Only Major University With A Hiking Trail.",
+
+User: 
+Marbo: It seems you didn't type anything!
+
+User: ok bye
+Marbo: I'm not quite sure I understand.
+
+User: do you know anything about sports?
+Marbo: hey how may i help u today?
+
+User: are you into sports?
+Marbo: I love talking about sports! Do you want to be see the latest waves in the sports industry?
+
+User: sure why not
+Marbo: You can check the latest sports news at this link: https://www.espn.com
+
+User: i am busy in programming these days
+Marbo: Technology is evolving so quickly! Are you interested in any specific tech trends?
+
+User: not really right now just vibing to some music
+Marbo: Music is such a great way to express yourself! What kind of genre do you like?
+
+User: i honestly like pop 1990s sad-ish type
+Marbo: That's awesome! I love that genre too! 
+
+User: yoo
+Marbo: hey how may i help u today?
+
+User: tell me a funfact
+Marbo: "giki is the Only Major University With A Hiking Trail.",
+
+User: hello
+Marbo: hey how may i help u today?
+
+User: how are you
+Marbo: i am doing fantastic! what about you?
+
+User: i am doing great too
+Marbo: That's awesome to hear!
+
+User: tell me a funfact
+Marbo: "Did you know? Octopuses have three hearts.",
+
+User: mujhe music sunne ka baht shoq hai
+Marbo: Music is such a great way to express yourself! What kind of genre do you like?
+
+User: i like sad songs
+Marbo: Music is such a great way to express yourself! What kind of genre do you like?
+
+User: tell me anything about sports
+Marbo: hey how may i help u today?
+
+User: sports
+Marbo: I love talking about sports! Do you want to be see the latest waves in the sports industry?
+
+User: yes
+Marbo: You can check the latest sports news at this link: https://www.espn.com
+
+User: music
+Marbo: Music is such a great way to express yourself! What kind of genre do you like?
+
+User: my favourite is pop
+Marbo: That's awesome! I love that genre too! 
+
+User: 
+Marbo: It seems you didn't type anything!
+
+User: yoo
+Marbo: hey how may i help u today?
+
+User: cd "c:\users\hp\desktop\c++\ai chatbot\" ; if ($?) { g++ chatbot.cpp -o chatbot } ; if ($?) { .\chatbot }
+Marbo: Technology is evolving so quickly! Are you interested in any specific tech trends?
+
+User: hello
+Marbo: hey how may i help u today?
+
+User: how are you
+Marbo: i am doing fantastic! what about you?
+
+User: great
+Marbo: That's awesome to hear!
+
+User: tell me a movie
+Marbo: Movies are fantastic! Do you have any recent favorites?
+
+User: my favourite is lala land
+Marbo: you have great taste in movies.
+
+User: funfact about giki
+Marbo: "giki is the Only Major University With A Hiking Trail.",
+
+User: hello
+Marbo: hey how may i help u today?
+
+User: how are you
+Marbo: i am doing fantastic! what about you?
+
+User: great
+Marbo: That's awesome to hear!
+
+User: tell me a funfact
+Marbo: "Did you know? Octopuses have three hearts.",
+
+User: i am into sports these days
+Marbo: I love talking about sports! Do you want to be see the latest waves in the sports industry?
+
+User: yes
+Marbo: You can check the latest sports news at this link: https://www.espn.com
+
+User: 
+Marbo: It seems you didn't type anything!
+

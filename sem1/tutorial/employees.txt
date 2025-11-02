@@ -1,0 +1,29 @@
+Employee Number: 1001
+Name: Ahmed Hassan
+Designation: Assistant Professor
+Salary: 301000
+Contact: 1234567890
+---
+Employee Number: 1002
+Name: Katherine Luis
+Designation: Lecturer
+Salary: 140000
+Contact: 1122334455
+---
+Employee Number: 1003
+Name: Muhammad Ali
+Designation: Lecturer
+Salary: 122000
+Contact: 0987654321
+---
+Employee Number: 1004
+Name: Anna Watson
+Designation: Lecturer
+Salary: 135000
+Contact: 1122334455
+---
+Employee Number: 1005
+Name: Bilal Umer
+Designation: Office Manager
+Salary: 85000
+Contact: 1122334455
