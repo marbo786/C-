@@ -17,11 +17,11 @@ struct Node {
 };
 
 
-// ---------- BALANCE FACTOR ----------
-int getBalance(Node* node) {
-    if (!node) return 0;
-    return getHeight(node->left) - getHeight(node->right);
-}
+// // ---------- BALANCE FACTOR ----------
+// int getBalance(Node* node) {
+//     if (!node) return 0;
+//     return getHeight(node->left) - getHeight(node->right);
+// }
 
 
 

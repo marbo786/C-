@@ -120,13 +120,15 @@ Node* deleteNode(Node* root, int key) {
             Node* temp = root->left ? root->left : root->right;
 
             // No child case
-            if (temp == NULL) {
+            if (temp == NULL) 
+            {
                 temp = root;
                 root = NULL;
             } else
                 *root = *temp; // One child case
             delete temp;
-        } else {
+        } 
+        else {
             Node* temp = minValueNode(root->right);
 
             root->key = temp->key;
