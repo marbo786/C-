@@ -1,0 +1,66 @@
+ CardioNet Lab Analysis: Model Fit and Regularization in Heart Disease Prediction
+
+ 1. Overfitting and Underfitting in Logistic Regression
+
+When building a model to predict heart disease, the main goal is simple in theory but tricky in practice: the model should learn real medical patterns without just memorizing the training data. Striking the right balance between bias and variance becomes the key challenge.
+
+ Underfitting (High Bias)
+
+Underfitting happens when the model is too simple to capture what’s really going on in the data. In our lab, we intentionally restricted the logistic regression model to only three features — for example, `age`, `chol`, and `thalach`.
+
+Heart disease, however, is influenced by multiple interacting factors. By limiting the input features so heavily, the model simply didn’t have enough information to form meaningful decision boundaries. As expected, its performance was weak on both training and testing datasets. Accuracy, precision, and ROC-AUC were all relatively low. In short, the model wasn’t flexible enough to learn the true signal.
+
+ Overfitting (High Variance)
+
+On the other end of the spectrum is overfitting. This happens when the model becomes too tailored to the training data. If we train logistic regression on all features and let it optimize aggressively without any constraints, it can fit the training set extremely well — sometimes almost perfectly.
+
+The problem shows up when we evaluate it on unseen data. The performance typically drops because the model has learned noise and minor fluctuations rather than general trends. The decision boundary becomes unnecessarily complex, reacting to outliers instead of capturing the broader patterns that actually indicate heart disease.
+
+---
+
+2. The Role of Regularization
+
+To address overfitting, we manually incorporated **L2 regularization (Ridge)** into our loss function and gradient descent updates.
+
+L2 regularization works by adding a penalty term to the binary cross-entropy loss. This penalty is proportional to the square of the weights (excluding the bias term). The idea is straightforward: discourage extremely large weight values so the model doesn’t depend too heavily on any single feature.
+
+The strength of this penalty is controlled by the hyperparameter (lambda).
+
+ No Regularization (λ = 0)
+
+Without regularization, the model is free to assign large weights if that reduces training loss. While this can improve training performance, it makes the model more sensitive to small variations in the data. As a result, generalization often suffers.
+
+Moderate Regularization (λ = moderate value)
+
+With a reasonable λ value, the model is encouraged to keep weights smaller and more evenly distributed. This prevents it from over-relying on features such as `cp` or `thalach`.
+
+Although training accuracy may drop slightly compared to the unregularized model, testing accuracy and overall stability usually improve. The decision boundary becomes smoother and more realistic, leading to better generalization.
+
+Excessive Regularization (λ too large)
+
+If λ is set too high, the penalty term dominates the loss function. The model is forced to shrink its weights close to zero, which effectively limits its ability to learn meaningful relationships.
+
+In this case, the model behaves as if it’s underfitting again — performing poorly on both training and testing data because it’s too restricted.
+
+---
+
+3. Final Observations and Model Choice
+
+From the results of the CardioNet lab, a few important takeaways stand out:
+
+1. Using more relevant features improves prediction.
+   The underfitting experiment showed that relying only on basic vitals like age and cholesterol isn’t enough. Features such as chest pain type (`cp`) and exercise-induced angina (`exang`) carry significant predictive value.
+
+2. Regularization is essential.
+   The model without regularization performed well on training data but lacked stability. Introducing L2 regularization provided a much better balance between bias and variance. The moderately regularized model consistently delivered stronger test performance across metrics like Accuracy, Precision, Recall, and F1-score.
+
+3. Evaluation metrics matter, especially in healthcare.
+   Accuracy alone doesn’t tell the full story. In medical prediction tasks, **Recall** and **ROC-AUC** are especially important. Missing a patient who actually has heart disease (a false negative) is far more serious than flagging a healthy patient incorrectly. The properly regularized full-feature model maintained high recall and a strong ROC-AUC, indicating reliable separation between healthy and diseased cases.
+
+---
+
+Final Verdict
+
+The best-performing setup for the CardioNet system is the **logistic regression model trained on the full feature set with moderate L2 regularization**.
+
+It maintains enough complexity to capture meaningful medical patterns while avoiding over-reliance on specific training samples. In practical terms, it generalizes better and provides more dependable predictions — which is exactly what we want in a healthcare application.

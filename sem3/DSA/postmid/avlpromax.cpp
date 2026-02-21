@@ -33,13 +33,13 @@ bool search(Node* root, int key) {
     return search(root->right, key);
 }
 
-// ---------- FIND MAX ----------
-Node* findMax(Node* root) {
-    if (!root) return NULL;
-    while (root->right)
-        root = root->right;
-    return root;
-}
+// // ---------- FIND MAX ----------
+// Node* findMax(Node* root) {
+//     if (!root) return NULL;
+//     while (root->right)
+//         root = root->right;
+//     return root;
+// }
 
 // ---------- COUNT NODES ----------
 int countNodes(Node* root) {
@@ -48,6 +48,8 @@ int countNodes(Node* root) {
 }
 
 // ---------- VALIDATE AVL TREE ----------
+
+
 bool isBST(Node* root, int minV, int maxV) {
     if (!root) return true;
     if (root->key <= minV || root->key >= maxV)

@@ -118,12 +118,13 @@ Node* deleteNode(Node* root, int key) {
     else {
         if ((root->left == NULL) || (root->right == NULL)) {
             Node* temp = root->left ? root->left : root->right;
-
+            
             // No child case
             if (temp == NULL) 
             {
                 temp = root;
                 root = NULL;
+
             } else
                 *root = *temp; // One child case
             delete temp;
