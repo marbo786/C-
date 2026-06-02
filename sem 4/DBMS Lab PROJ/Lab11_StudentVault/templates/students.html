@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students List - Student Vault System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Students List</h2>
+            <a href="{{ url_for('index') }}" class="btn btn-outline">Back to Home</a>
+        </div>
+        
+        <div class="grid">
+            {% for profile in profiles %}
+            <div class="card">
+                {% if profile[3] %}
+                    <img src="{{ url_for('static', filename='uploads/' + profile[3]) }}" alt="{{ profile[1] }}'s profile image" class="profile-img">
+                {% else %}
+                    <div class="profile-img-placeholder"></div>
+                {% endif %}
+                <h3>{{ profile[1] }}</h3>
+                <p class="major">{{ profile[2] }}</p>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No students found. Add a profile first!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

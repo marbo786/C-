@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Vault System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="home-container">
+        <h1 class="page-title">Student Vault System</h1>
+        <p class="subtitle">Manage student records efficiently</p>
+        <div class="button-group">
+            <a href="{{ url_for('add_profile') }}" class="btn">Add Profile</a>
+            <a href="{{ url_for('students') }}" class="btn">View Students</a>
+            <a href="{{ url_for('admin') }}" class="btn admin-btn">Admin Panel</a>
+        </div>
+    </div>
+</body>
+</html>
