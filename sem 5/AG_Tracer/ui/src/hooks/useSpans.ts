@@ -10,18 +10,20 @@ interface SpanData {
 }
 
 interface SpanState {
-  conversationIds: string[];
+  conversations: { id: string, title: string }[];
   activeConversationId: string | null;
   data: SpanData;
   isLoading: boolean;
+  error: string | null;
 }
 
 export function useSpans(vscodeApi: VsCodeApi | null) {
   const [state, setState] = useState<SpanState>({
-    conversationIds: [],
+    conversations: [],
     activeConversationId: null,
     data: { spans: [], toolCalls: [], fileAccesses: [] },
-    isLoading: true
+    isLoading: true,
+    error: null
   });
 
   // Listen for messages from the extension
@@ -30,7 +32,7 @@ export function useSpans(vscodeApi: VsCodeApi | null) {
       const message = event.data;
       switch (message.type) {
         case 'conversations:list':
-          setState(prev => ({ ...prev, conversationIds: message.conversationIds, isLoading: false }));
+          setState(prev => ({ ...prev, conversations: message.conversations, isLoading: false }));
           break;
         case 'spans:initial':
           setState(prev => ({
@@ -41,7 +43,8 @@ export function useSpans(vscodeApi: VsCodeApi | null) {
               toolCalls: message.toolCalls,
               fileAccesses: message.fileAccesses
             },
-            isLoading: false
+            isLoading: false,
+            error: null
           }));
           break;
         case 'spans:update':
@@ -57,6 +60,9 @@ export function useSpans(vscodeApi: VsCodeApi | null) {
             };
           });
           break;
+        case 'error':
+          setState(prev => ({ ...prev, isLoading: false, error: message.message }));
+          break;
       }
     }
 
@@ -66,10 +72,10 @@ export function useSpans(vscodeApi: VsCodeApi | null) {
     vscodeApi?.postMessage({ type: 'request:conversations' });
     
     return () => window.removeEventListener('message', handleMessage);
-  }, [vscodeApi]);
+  }, [state.activeConversationId, vscodeApi]);
 
   const selectConversation = useCallback((conversationId: string) => {
-    setState(prev => ({ ...prev, isLoading: true, activeConversationId: conversationId }));
+    setState(prev => ({ ...prev, isLoading: true, activeConversationId: conversationId, error: null }));
     vscodeApi?.postMessage({ type: 'request:spans', conversationId });
   }, [vscodeApi]);
 

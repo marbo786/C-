@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState } from 'react';
+import { useRef, useMemo } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Span, ToolCallRecord, FileAccessRecord } from '@ag-tracer/shared';
 import { TimelineRow } from './TimelineRow';
@@ -7,11 +7,12 @@ interface TimelineProps {
   spans: Span[];
   toolCalls: ToolCallRecord[];
   fileAccesses: FileAccessRecord[];
+  selectedIndex: number | null;
+  onSelect: (index: number) => void;
 }
 
-export function Timeline({ spans, toolCalls, fileAccesses }: TimelineProps) {
+export function Timeline({ spans, toolCalls, fileAccesses, selectedIndex, onSelect }: TimelineProps) {
   const parentRef = useRef<HTMLDivElement>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // Build lookup maps for efficient rendering
   const toolCallsByStep = useMemo(() => {
@@ -77,7 +78,7 @@ export function Timeline({ spans, toolCalls, fileAccesses }: TimelineProps) {
                 toolCalls={stepToolCalls}
                 fileAccesses={stepFileAccesses}
                 isSelected={selectedIndex === virtualItem.index}
-                onClick={() => setSelectedIndex(virtualItem.index)}
+                onClick={() => onSelect(virtualItem.index)}
               />
             </div>
           );
