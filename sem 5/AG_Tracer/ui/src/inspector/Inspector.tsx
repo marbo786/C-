@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import type { Span, ToolCallRecord, FileAccessRecord } from '@ag-tracer/shared';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DiffViewer } from './DiffViewer';
 import './Inspector.css';
 
 interface InspectorProps {
@@ -10,14 +11,18 @@ interface InspectorProps {
   fileAccesses: FileAccessRecord[];
 }
 
-type TabId = 'content' | 'thinking' | 'tools';
+type TabId = 'content' | 'thinking' | 'tools' | 'diff';
 
 export function Inspector({ span, toolCalls, fileAccesses }: InspectorProps) {
   const hasContent = !!span.content;
   const hasThinking = !!span.thinking;
   const hasTools = toolCalls.length > 0;
+  
+  const writeTools = toolCalls.filter(tc => tc.toolName === 'write_to_file' || tc.toolName === 'replace_file_content' || tc.toolName === 'multi_replace_file_content');
+  const hasDiff = writeTools.length > 0;
 
   const [activeTab, setActiveTab] = useState<TabId>(() => {
+    if (hasDiff) return 'diff'; // auto-select diff if it exists
     if (hasContent) return 'content';
     if (hasThinking) return 'thinking';
     if (hasTools) return 'tools';
@@ -26,14 +31,16 @@ export function Inspector({ span, toolCalls, fileAccesses }: InspectorProps) {
 
   // Correct the active tab when the selected span changes
   useEffect(() => {
-    if (activeTab === 'content' && !hasContent) {
-      setActiveTab(hasThinking ? 'thinking' : hasTools ? 'tools' : 'content');
+    if (activeTab === 'diff' && !hasDiff) {
+      setActiveTab(hasContent ? 'content' : hasThinking ? 'thinking' : hasTools ? 'tools' : 'content');
+    } else if (activeTab === 'content' && !hasContent) {
+      setActiveTab(hasDiff ? 'diff' : hasThinking ? 'thinking' : hasTools ? 'tools' : 'content');
     } else if (activeTab === 'thinking' && !hasThinking) {
-      setActiveTab(hasContent ? 'content' : hasTools ? 'tools' : 'content');
+      setActiveTab(hasDiff ? 'diff' : hasContent ? 'content' : hasTools ? 'tools' : 'content');
     } else if (activeTab === 'tools' && !hasTools) {
-      setActiveTab(hasContent ? 'content' : hasThinking ? 'thinking' : 'content');
+      setActiveTab(hasDiff ? 'diff' : hasContent ? 'content' : hasThinking ? 'thinking' : 'content');
     }
-  }, [span.stepIndex, hasContent, hasThinking, hasTools]);
+  }, [span.stepIndex, hasContent, hasThinking, hasTools, hasDiff]);
 
   const toolsJson = useMemo(() => {
     if (!hasTools) return '';
@@ -86,35 +93,58 @@ export function Inspector({ span, toolCalls, fileAccesses }: InspectorProps) {
             >
               Tool Calls ({toolCalls.length})
             </button>
+            <button 
+              className={`inspector-tab ${activeTab === 'diff' ? 'active' : ''} ${!hasDiff ? 'disabled' : ''}`}
+              onClick={() => hasDiff && setActiveTab('diff')}
+              disabled={!hasDiff}
+            >
+              Diff
+            </button>
           </div>
         </div>
         <div className="inspector-body">
-          <Editor
-            height="100%"
-            language={language}
-            theme="vs-dark"
-            value={editorValue}
-            loading={<div style={{ padding: '16px', color: 'var(--vscode-descriptionForeground)' }}>Loading editor...</div>}
-            options={{
-              readOnly: true,
-              wordWrap: 'on',
-              minimap: { enabled: false },
-              scrollBeyondLastLine: false,
-              padding: { top: 16, bottom: 16 },
-              fontSize: 13,
-              lineHeight: 20,
-              renderLineHighlight: 'none',
-              hideCursorInOverviewRuler: true,
-              automaticLayout: true,
-              stickyScroll: { enabled: false },
-              overviewRulerLanes: 0,
-              scrollbar: {
-                useShadows: false,
-                vertical: 'visible',
-                horizontal: 'visible'
-              }
-            }}
-          />
+          {activeTab === 'diff' && hasDiff ? (() => {
+            const writeTool = writeTools[0]!;
+            const args = writeTool.toolArgs as any;
+            let original = '';
+            let modified = '';
+            if (writeTool.toolName === 'write_to_file') {
+              modified = args.CodeContent || '';
+            } else if (writeTool.toolName === 'replace_file_content') {
+              original = args.TargetContent || '';
+              modified = args.ReplacementContent || '';
+            } else if (writeTool.toolName === 'multi_replace_file_content') {
+              modified = JSON.stringify(args.ReplacementChunks, null, 2);
+            }
+            return <DiffViewer original={original} modified={modified} />;
+          })() : (
+            <Editor
+              height="100%"
+              language={language}
+              theme="vs-dark"
+              value={editorValue}
+              loading={<div style={{ padding: '16px', color: 'var(--vscode-descriptionForeground)' }}>Loading editor...</div>}
+              options={{
+                readOnly: true,
+                wordWrap: 'on',
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                padding: { top: 16, bottom: 16 },
+                fontSize: 13,
+                lineHeight: 20,
+                renderLineHighlight: 'none',
+                hideCursorInOverviewRuler: true,
+                automaticLayout: true,
+                stickyScroll: { enabled: false },
+                overviewRulerLanes: 0,
+                scrollbar: {
+                  useShadows: false,
+                  vertical: 'visible',
+                  horizontal: 'visible'
+                }
+              }}
+            />
+          )}
         </div>
       </motion.div>
     </AnimatePresence>

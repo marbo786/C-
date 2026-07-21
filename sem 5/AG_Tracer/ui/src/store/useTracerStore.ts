@@ -14,8 +14,9 @@ export interface TracerState {
   expandedClusters: Record<string, boolean>;
   isLoading: boolean;
   error: string | null;
-  viewMode: 'timeline' | 'flow';
+  viewMode: 'timeline' | 'flow' | 'files';
   isAnalyticsOpen: boolean;
+  timelineFilters: Set<string>;
 
   // Actions
   setConversations: (conversations: { id: string, title: string }[]) => void;
@@ -23,8 +24,9 @@ export interface TracerState {
   appendData: (id: string, data: { spans: Span[], toolCalls: ToolCallRecord[], fileAccesses: FileAccessRecord[] }) => void;
   setSelectedIndex: (index: number | null) => void;
   toggleCluster: (clusterId: string) => void;
-  setViewMode: (mode: 'timeline' | 'flow') => void;
+  setViewMode: (mode: 'timeline' | 'flow' | 'files') => void;
   setAnalyticsOpen: (open: boolean) => void;
+  toggleTimelineFilter: (filter: string) => void;
   setError: (error: string | null) => void;
   setLoading: (loading: boolean) => void;
 }
@@ -42,6 +44,7 @@ export const useTracerStore = create<TracerState>()((set, get) => ({
   error: null,
   viewMode: 'timeline',
   isAnalyticsOpen: false,
+  timelineFilters: new Set(['user', 'agent', 'read', 'write', 'cmd', 'error']),
 
   setConversations: (conversations) => set({ conversations, isLoading: false }),
   
@@ -77,6 +80,15 @@ export const useTracerStore = create<TracerState>()((set, get) => ({
   })),
   setViewMode: (mode) => set({ viewMode: mode }),
   setAnalyticsOpen: (open) => set({ isAnalyticsOpen: open }),
+  toggleTimelineFilter: (filter) => set((state) => {
+    const newFilters = new Set(state.timelineFilters);
+    if (newFilters.has(filter)) {
+      newFilters.delete(filter);
+    } else {
+      newFilters.add(filter);
+    }
+    return { timelineFilters: newFilters };
+  }),
   setError: (error) => set({ error, isLoading: false }),
   setLoading: (loading) => set({ isLoading: loading }),
 }));

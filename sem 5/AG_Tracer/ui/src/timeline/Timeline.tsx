@@ -2,6 +2,8 @@ import { useRef, useMemo, useState, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Span, ToolCallRecord, FileAccessRecord } from '@ag-tracer/shared';
 import { TimelineRow } from './TimelineRow';
+import { TimelineFilterBar } from './TimelineFilterBar';
+import { useTracerStore } from '../store/useTracerStore';
 
 interface TimelineProps {
   spans: Span[];
@@ -35,8 +37,31 @@ export function Timeline({ spans, toolCalls, fileAccesses, selectedIndex, onSele
     return map;
   }, [fileAccesses]);
 
+  const filters = useTracerStore(state => state.timelineFilters);
+
+  const filteredSpans = useMemo(() => {
+    return spans.filter(span => {
+      if (!filters.has('error') && span.status === 'ERROR') return false;
+      if (!filters.has('user') && span.source === 'USER_EXPLICIT') return false;
+      
+      const tc = toolCallsByStep.get(span.stepIndex) || [];
+      const fa = fileAccessesByStep.get(span.stepIndex) || [];
+      
+      const hasRead = fa.some(f => f.accessType === 'read' || f.accessType === 'list' || f.accessType === 'search');
+      const hasWrite = fa.some(f => f.accessType === 'write');
+      const hasCmd = tc.some(t => t.toolName === 'run_command');
+      
+      if (span.source === 'MODEL' && tc.length === 0 && !filters.has('agent')) return false;
+      if (hasRead && !filters.has('read')) return false;
+      if (hasWrite && !filters.has('write')) return false;
+      if (hasCmd && !filters.has('cmd')) return false;
+      
+      return true;
+    });
+  }, [spans, filters, toolCallsByStep, fileAccessesByStep]);
+
   const virtualizer = useVirtualizer({
-    count: spans.length,
+    count: filteredSpans.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 36,
     overscan: 20
@@ -98,14 +123,19 @@ export function Timeline({ spans, toolCalls, fileAccesses, selectedIndex, onSele
   }
 
   return (
-    <div ref={parentRef} className="timeline-container">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <TimelineFilterBar />
+      <div ref={parentRef} className="timeline-container" style={{ flex: 1 }}>
       <div
         style={{ height: `${virtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}
       >
         {virtualizer.getVirtualItems().map((virtualItem) => {
-          const span = spans[virtualItem.index]!;
+          const span = filteredSpans[virtualItem.index]!;
           const stepToolCalls = toolCallsByStep.get(span.stepIndex) ?? [];
           const stepFileAccesses = fileAccessesByStep.get(span.stepIndex) ?? [];
+          
+          // Map the virtualized index back to the absolute selectedIndex
+          const absoluteIndex = spans.findIndex(s => s.stepIndex === span.stepIndex);
 
           return (
             <div
@@ -123,14 +153,15 @@ export function Timeline({ spans, toolCalls, fileAccesses, selectedIndex, onSele
                 span={span}
                 toolCalls={stepToolCalls}
                 fileAccesses={stepFileAccesses}
-                isSelected={selectedIndex === virtualItem.index}
-                onClick={() => onSelect(virtualItem.index)}
+                isSelected={selectedIndex === absoluteIndex}
+                onClick={() => onSelect(absoluteIndex)}
                 animateEntrance={animationsToRun.has(span.stepIndex)}
                 onAnimationComplete={() => handleAnimationComplete(span.stepIndex)}
               />
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );

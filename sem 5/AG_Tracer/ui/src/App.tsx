@@ -1,13 +1,15 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useVsCodeApi } from './hooks/useVsCodeApi';
 import { useSpans } from './hooks/useSpans';
 import { Timeline } from './timeline/Timeline';
 import { ConversationSelector } from './components/ConversationSelector';
 import { Inspector } from './inspector/Inspector';
+import { useKeyboardNav } from './hooks/useKeyboardNav';
 import { useTracerStore } from './store/useTracerStore';
 import { AgentFlow } from './flow/AgentFlow';
 import { AnalyticsView } from './analytics/AnalyticsView';
+import { FileEvolutionView } from './files/FileEvolutionView';
 import { motion, AnimatePresence } from 'framer-motion';
 import './App.css'; // Let's add some styles for the toggle
 
@@ -36,6 +38,8 @@ export function App() {
     selectConversation(conversationId);
   }, [selectConversation]);
 
+  useKeyboardNav();
+
   const selectedSpan = selectedIndex !== null ? spans[selectedIndex] ?? null : null;
   const selectedToolCalls = selectedSpan ? toolCalls.filter(t => t.stepIndex === selectedSpan.stepIndex) : [];
   const selectedFileAccesses = selectedSpan ? fileAccesses.filter(f => f.stepIndex === selectedSpan.stepIndex) : [];
@@ -57,6 +61,12 @@ export function App() {
               onClick={() => setViewMode('flow')}
             >
               Flow
+            </button>
+            <button 
+              className={viewMode === 'files' ? 'active' : ''} 
+              onClick={() => setViewMode('files')}
+            >
+              Files
             </button>
           </div>
           <div className="view-toggle" style={{ marginLeft: '8px' }}>
@@ -121,8 +131,14 @@ export function App() {
                           selectedIndex={selectedIndex}
                           onSelect={setSelectedIndex}
                         />
-                      ) : (
+                      ) : viewMode === 'flow' ? (
                         <AgentFlow />
+                      ) : (
+                        <FileEvolutionView 
+                          spans={spans}
+                          toolCalls={toolCalls}
+                          fileAccesses={fileAccesses}
+                        />
                       )}
                     </Panel>
                     
