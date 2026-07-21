@@ -8,6 +8,7 @@ import { Inspector } from './inspector/Inspector';
 import { useTracerStore } from './store/useTracerStore';
 import { AgentFlow } from './flow/AgentFlow';
 import { AnalyticsView } from './analytics/AnalyticsView';
+import { motion, AnimatePresence } from 'framer-motion';
 import './App.css'; // Let's add some styles for the toggle
 
 export function App() {
@@ -76,59 +77,82 @@ export function App() {
         activeConversationId={activeConversationId}
         onSelect={handleSelectConversation}
       />
-      <div style={{ flex: 1, overflow: 'hidden' }}>
-        {error ? (
-          <div className="empty-state">
-            <div className="empty-state-icon">⚠️</div>
-            <div className="empty-state-text">{error}</div>
-          </div>
-        ) : isLoading ? (
-          <div className="empty-state">
-            <div className="empty-state-text">Loading...</div>
-          </div>
-        ) : (
-          <PanelGroup direction="vertical">
-            <Panel defaultSize={isAnalyticsOpen ? 60 : 100} minSize={30}>
-              <PanelGroup direction="horizontal">
-                <Panel defaultSize={50} minSize={20}>
-                  {viewMode === 'timeline' ? (
-                    <Timeline
-                      spans={spans}
-                      toolCalls={toolCalls}
-                      fileAccesses={fileAccesses}
-                      selectedIndex={selectedIndex}
-                      onSelect={setSelectedIndex}
-                    />
-                  ) : (
-                    <AgentFlow />
-                  )}
+      <div className="main-content" style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <motion.div 
+              key="loading"
+              className="empty-state"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="empty-state-text">Loading...</div>
+            </motion.div>
+          ) : error ? (
+            <motion.div 
+              key="error"
+              className="empty-state error"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="empty-state-text">Error: {error}</div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="content"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              style={{ width: '100%', height: '100%' }}
+            >
+              <PanelGroup direction="vertical">
+                <Panel defaultSize={isAnalyticsOpen ? 60 : 100} minSize={30}>
+                  <PanelGroup direction="horizontal">
+                    <Panel defaultSize={50} minSize={20}>
+                      {viewMode === 'timeline' ? (
+                        <Timeline
+                          spans={spans}
+                          toolCalls={toolCalls}
+                          fileAccesses={fileAccesses}
+                          selectedIndex={selectedIndex}
+                          onSelect={setSelectedIndex}
+                        />
+                      ) : (
+                        <AgentFlow />
+                      )}
+                    </Panel>
+                    
+                    {selectedSpan && (
+                      <>
+                        <PanelResizeHandle className="resize-handle" />
+                        <Panel defaultSize={50} minSize={20}>
+                          <Inspector
+                            span={selectedSpan}
+                            toolCalls={selectedToolCalls}
+                            fileAccesses={selectedFileAccesses}
+                          />
+                        </Panel>
+                      </>
+                    )}
+                  </PanelGroup>
                 </Panel>
                 
-                {selectedSpan && (
+                {isAnalyticsOpen && (
                   <>
-                    <PanelResizeHandle className="resize-handle" />
-                    <Panel defaultSize={50} minSize={20}>
-                      <Inspector
-                        span={selectedSpan}
-                        toolCalls={selectedToolCalls}
-                        fileAccesses={selectedFileAccesses}
-                      />
+                    <PanelResizeHandle className="resize-handle horizontal" style={{ height: '4px', cursor: 'row-resize', background: 'var(--vscode-widget-border)' }} />
+                    <Panel defaultSize={40} minSize={20}>
+                      <AnalyticsView spans={spans} toolCalls={toolCalls} fileAccesses={fileAccesses} />
                     </Panel>
                   </>
                 )}
               </PanelGroup>
-            </Panel>
-            
-            {isAnalyticsOpen && (
-              <>
-                <PanelResizeHandle className="resize-handle horizontal" style={{ height: '4px', cursor: 'row-resize', background: 'var(--vscode-widget-border)' }} />
-                <Panel defaultSize={40} minSize={20}>
-                  <AnalyticsView spans={spans} toolCalls={toolCalls} fileAccesses={fileAccesses} />
-                </Panel>
-              </>
-            )}
-          </PanelGroup>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import type { Span, ToolCallRecord, FileAccessRecord } from '@ag-tracer/shared';
+import { motion, AnimatePresence } from 'framer-motion';
 import './Inspector.css';
 
 interface InspectorProps {
@@ -52,62 +53,70 @@ export function Inspector({ span, toolCalls, fileAccesses }: InspectorProps) {
   }
 
   return (
-    <div className="inspector">
-      <div className="inspector-header">
-        <div className="inspector-title">Step {span.stepIndex} ({span.source})</div>
-        <div className="inspector-tabs">
-          <button 
-            className={`inspector-tab ${activeTab === 'content' ? 'active' : ''} ${!hasContent ? 'disabled' : ''}`}
-            onClick={() => hasContent && setActiveTab('content')}
-            disabled={!hasContent}
-          >
-            Content
-          </button>
-          <button 
-            className={`inspector-tab ${activeTab === 'thinking' ? 'active' : ''} ${!hasThinking ? 'disabled' : ''}`}
-            onClick={() => hasThinking && setActiveTab('thinking')}
-            disabled={!hasThinking}
-          >
-            Thinking
-          </button>
-          <button 
-            className={`inspector-tab ${activeTab === 'tools' ? 'active' : ''} ${!hasTools ? 'disabled' : ''}`}
-            onClick={() => hasTools && setActiveTab('tools')}
-            disabled={!hasTools}
-          >
-            Tool Calls ({toolCalls.length})
-          </button>
+    <AnimatePresence mode="wait">
+      <motion.div 
+        className="inspector"
+        key={span.stepIndex}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        transition={{ duration: 0.15 }}
+      >
+        <div className="inspector-header">
+          <div className="inspector-title">Step {span.stepIndex} ({span.source})</div>
+          <div className="inspector-tabs">
+            <button 
+              className={`inspector-tab ${activeTab === 'content' ? 'active' : ''} ${!hasContent ? 'disabled' : ''}`}
+              onClick={() => hasContent && setActiveTab('content')}
+              disabled={!hasContent}
+            >
+              Content
+            </button>
+            <button 
+              className={`inspector-tab ${activeTab === 'thinking' ? 'active' : ''} ${!hasThinking ? 'disabled' : ''}`}
+              onClick={() => hasThinking && setActiveTab('thinking')}
+              disabled={!hasThinking}
+            >
+              Thinking
+            </button>
+            <button 
+              className={`inspector-tab ${activeTab === 'tools' ? 'active' : ''} ${!hasTools ? 'disabled' : ''}`}
+              onClick={() => hasTools && setActiveTab('tools')}
+              disabled={!hasTools}
+            >
+              Tool Calls ({toolCalls.length})
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="inspector-body">
-        <Editor
-          key={span.stepIndex}
-          height="100%"
-          language={language}
-          theme="vs-dark"
-          value={editorValue}
-          loading={<div style={{ padding: '16px', color: 'var(--vscode-descriptionForeground)' }}>Loading editor...</div>}
-          options={{
-            readOnly: true,
-            wordWrap: 'on',
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            padding: { top: 16, bottom: 16 },
-            fontSize: 13,
-            lineHeight: 20,
-            renderLineHighlight: 'none',
-            hideCursorInOverviewRuler: true,
-            automaticLayout: true,
-            stickyScroll: { enabled: false },
-            overviewRulerLanes: 0,
-            scrollbar: {
-              useShadows: false,
-              vertical: 'visible',
-              horizontal: 'visible'
-            }
-          }}
-        />
-      </div>
-    </div>
+        <div className="inspector-body">
+          <Editor
+            height="100%"
+            language={language}
+            theme="vs-dark"
+            value={editorValue}
+            loading={<div style={{ padding: '16px', color: 'var(--vscode-descriptionForeground)' }}>Loading editor...</div>}
+            options={{
+              readOnly: true,
+              wordWrap: 'on',
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+              padding: { top: 16, bottom: 16 },
+              fontSize: 13,
+              lineHeight: 20,
+              renderLineHighlight: 'none',
+              hideCursorInOverviewRuler: true,
+              automaticLayout: true,
+              stickyScroll: { enabled: false },
+              overviewRulerLanes: 0,
+              scrollbar: {
+                useShadows: false,
+                vertical: 'visible',
+                horizontal: 'visible'
+              }
+            }}
+          />
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 }

@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Span, ToolCallRecord, FileAccessRecord } from '@ag-tracer/shared';
 import { TimelineRow } from './TimelineRow';
@@ -42,6 +42,52 @@ export function Timeline({ spans, toolCalls, fileAccesses, selectedIndex, onSele
     overscan: 20
   });
 
+  const maxIndexRef = useRef(-1);
+  const [animationsToRun, setAnimationsToRun] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (spans.length === 0) return;
+    const lastSpan = spans[spans.length - 1];
+    if (!lastSpan) return;
+
+    if (maxIndexRef.current === -1) {
+      // First load, don't animate existing rows
+      maxIndexRef.current = lastSpan.stepIndex;
+      return;
+    }
+
+    if (lastSpan.stepIndex > maxIndexRef.current) {
+      // Check burst condition
+      let isBurst = false;
+      if (spans.length >= 2) {
+        const prevSpan = spans[spans.length - 2];
+        if (prevSpan) {
+          const lastTime = new Date(lastSpan.createdAt).getTime();
+          const prevTime = new Date(prevSpan.createdAt).getTime();
+          isBurst = (lastTime - prevTime) < 150;
+        }
+      }
+
+      if (!isBurst) {
+        setAnimationsToRun(prev => {
+          const next = new Set(prev);
+          next.add(lastSpan.stepIndex);
+          return next;
+        });
+      }
+      maxIndexRef.current = lastSpan.stepIndex;
+    }
+  }, [spans]);
+
+  const handleAnimationComplete = (stepIndex: number) => {
+    setAnimationsToRun(prev => {
+      if (!prev.has(stepIndex)) return prev;
+      const next = new Set(prev);
+      next.delete(stepIndex);
+      return next;
+    });
+  };
+
   if (spans.length === 0) {
     return (
       <div className="empty-state">
@@ -79,6 +125,8 @@ export function Timeline({ spans, toolCalls, fileAccesses, selectedIndex, onSele
                 fileAccesses={stepFileAccesses}
                 isSelected={selectedIndex === virtualItem.index}
                 onClick={() => onSelect(virtualItem.index)}
+                animateEntrance={animationsToRun.has(span.stepIndex)}
+                onAnimationComplete={() => handleAnimationComplete(span.stepIndex)}
               />
             </div>
           );
