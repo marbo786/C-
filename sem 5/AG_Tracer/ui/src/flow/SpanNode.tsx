@@ -13,9 +13,21 @@ export const SpanNode = memo(({ data, selected }: NodeProps) => {
   else if (span.source === 'SYSTEM') sourceClass = 'timeline-row--system';
 
   if (span.status === 'ERROR') sourceClass = 'timeline-row--error';
+  else if (span.status === 'RUNNING') sourceClass = 'timeline-row--running';
+
+  const isError = span.status === 'ERROR';
+  const isRunning = span.status === 'RUNNING';
+
+  const dynamicStyle: React.CSSProperties = {
+    ...nodeStyle,
+    borderColor: isError ? 'var(--vscode-charts-red, #f14c4c)' : isRunning ? 'var(--vscode-charts-yellow, #cca700)' : 'var(--vscode-widget-border, rgba(128, 128, 128, 0.2))',
+    backgroundColor: isError ? 'rgba(241, 76, 76, 0.1)' : isRunning ? 'rgba(204, 167, 0, 0.1)' : 'var(--vscode-editor-background)',
+    borderWidth: (isError || isRunning) ? '2px' : '1px',
+    animation: isRunning ? 'pulse-running 2s infinite ease-in-out' : 'none',
+  };
 
   return (
-    <div className={`flow-node ${sourceClass} ${selected ? 'selected' : ''}`} style={nodeStyle}>
+    <div className={`flow-node ${sourceClass} ${selected ? 'selected' : ''}`} style={dynamicStyle}>
       <Handle type="target" position={Position.Top} />
       <div style={headerStyle}>
         <span className="timeline-step-index">#{span.stepIndex}</span>
@@ -40,6 +52,7 @@ const nodeStyle: React.CSSProperties = {
   minWidth: '200px',
   maxWidth: '250px',
   boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+  borderLeftWidth: '4px', // Standardize on left border for node type indication
 };
 
 const headerStyle: React.CSSProperties = {

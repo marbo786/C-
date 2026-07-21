@@ -39,6 +39,14 @@ export function getLayoutElements(
       const clusterId = `cluster-${span.stepIndex}-${lastSpanInCluster.stepIndex}`;
       const isExpanded = expandedClusters[clusterId];
 
+      let hasError = false;
+      let hasRunning = false;
+      for (let j = 0; j < clusterSize; j++) {
+        const cSpan = spans[i + j];
+        if (cSpan?.status === 'ERROR') hasError = true;
+        if (cSpan?.status === 'RUNNING') hasRunning = true;
+      }
+
       if (!isExpanded) {
         // Render a single collapsed cluster node
         nodes.push({
@@ -49,7 +57,9 @@ export function getLayoutElements(
             clusterId, 
             count: clusterSize, 
             type: span.type, 
-            source: span.source 
+            source: span.source,
+            hasError,
+            hasRunning
           },
         });
 

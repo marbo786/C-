@@ -30,8 +30,10 @@ export function TimelineRow({ span, toolCalls, fileAccesses, isSelected, onClick
       <span className="timeline-type-badge">{formatStepType(span.type)}</span>
       <span className="timeline-content-preview">{preview}</span>
       <div className="timeline-tools">
-        {toolCalls.map((tc, i) => <ToolCallBadge key={i} toolCall={tc} />)}
-        {fileAccesses.map((fa, i) => <FileTouchBadge key={i} filePath={fa.filePath} accessType={fa.accessType} />)}
+        {toolCalls.slice(0, 4).map((tc, i) => <ToolCallBadge key={i} toolCall={tc} />)}
+        {toolCalls.length > 4 && <span className="tool-badge tool-badge--other">+{toolCalls.length - 4} tools</span>}
+        {fileAccesses.slice(0, 4).map((fa, i) => <FileTouchBadge key={i} filePath={fa.filePath} accessType={fa.accessType} />)}
+        {fileAccesses.length > 4 && <span className="file-badge">+{fileAccesses.length - 4} files</span>}
       </div>
       <TruncationIndicator truncatedFields={span.truncatedFields} />
       <span className="timeline-timestamp">{time}</span>
@@ -64,6 +66,7 @@ export function TimelineRow({ span, toolCalls, fileAccesses, isSelected, onClick
 
 function getSourceClass(source: string, status: string): string {
   if (status === 'ERROR') return 'timeline-row--error';
+  if (status === 'RUNNING') return 'timeline-row--running';
   switch (source) {
     case 'USER_EXPLICIT': return 'timeline-row--user';
     case 'MODEL': return 'timeline-row--model';

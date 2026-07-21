@@ -7,6 +7,7 @@ export function TimelineFilterBar() {
   const filterOptions = [
     { id: 'user', label: 'User', icon: '👤' },
     { id: 'agent', label: 'Agent', icon: '🤖' },
+    { id: 'system', label: 'System', icon: '⚙️' },
     { id: 'read', label: 'Read', icon: '👀' },
     { id: 'write', label: 'Write', icon: '✏️' },
     { id: 'cmd', label: 'Cmd', icon: '🖥️' },

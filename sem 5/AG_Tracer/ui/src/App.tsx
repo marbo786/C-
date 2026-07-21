@@ -150,6 +150,7 @@ export function App() {
                             span={selectedSpan}
                             toolCalls={selectedToolCalls}
                             fileAccesses={selectedFileAccesses}
+                            onClose={() => setSelectedIndex(null)}
                           />
                         </Panel>
                       </>

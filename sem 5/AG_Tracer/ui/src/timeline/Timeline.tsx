@@ -41,9 +41,17 @@ export function Timeline({ spans, toolCalls, fileAccesses, selectedIndex, onSele
 
   const filteredSpans = useMemo(() => {
     return spans.filter(span => {
-      if (!filters.has('error') && span.status === 'ERROR') return false;
-      if (!filters.has('user') && span.source === 'USER_EXPLICIT') return false;
+      let matches = false;
+
+      // Source-based filters
+      if (filters.has('user') && span.source === 'USER_EXPLICIT') matches = true;
+      if (filters.has('agent') && span.source === 'MODEL') matches = true;
+      if (filters.has('system') && (span.source === 'SYSTEM' || span.type.includes('MESSAGE'))) matches = true;
       
+      // Status/Error filter
+      if (filters.has('error') && (span.status === 'ERROR' || span.type === 'ERROR_MESSAGE')) matches = true;
+
+      // Tool-based filters
       const tc = toolCallsByStep.get(span.stepIndex) || [];
       const fa = fileAccessesByStep.get(span.stepIndex) || [];
       
@@ -51,12 +59,11 @@ export function Timeline({ spans, toolCalls, fileAccesses, selectedIndex, onSele
       const hasWrite = fa.some(f => f.accessType === 'write');
       const hasCmd = tc.some(t => t.toolName === 'run_command');
       
-      if (span.source === 'MODEL' && tc.length === 0 && !filters.has('agent')) return false;
-      if (hasRead && !filters.has('read')) return false;
-      if (hasWrite && !filters.has('write')) return false;
-      if (hasCmd && !filters.has('cmd')) return false;
+      if (filters.has('read') && hasRead) matches = true;
+      if (filters.has('write') && hasWrite) matches = true;
+      if (filters.has('cmd') && hasCmd) matches = true;
       
-      return true;
+      return matches;
     });
   }, [spans, filters, toolCallsByStep, fileAccessesByStep]);
 

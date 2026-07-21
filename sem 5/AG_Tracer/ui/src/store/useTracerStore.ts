@@ -44,7 +44,7 @@ export const useTracerStore = create<TracerState>()((set, get) => ({
   error: null,
   viewMode: 'timeline',
   isAnalyticsOpen: false,
-  timelineFilters: new Set(['user', 'agent', 'read', 'write', 'cmd', 'error']),
+  timelineFilters: new Set(['user', 'agent', 'read', 'write', 'cmd', 'error', 'system']),
 
   setConversations: (conversations) => set({ conversations, isLoading: false }),
   

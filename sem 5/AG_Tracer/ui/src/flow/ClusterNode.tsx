@@ -2,18 +2,28 @@ import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 
 export const ClusterNode = memo(({ data, selected }: NodeProps) => {
-  const { count, type, source } = data as { count: number, type: string, source: string };
+  const { count, type, source, hasError, hasRunning } = data as { count: number, type: string, source: string, hasError?: boolean, hasRunning?: boolean };
   
   let sourceClass = '';
   if (source === 'USER_EXPLICIT') sourceClass = 'timeline-row--user';
   else if (source === 'MODEL') sourceClass = 'timeline-row--model';
   else if (source === 'SYSTEM') sourceClass = 'timeline-row--system';
 
+  const dynamicStyle: React.CSSProperties = {
+    ...nodeStyle,
+    borderColor: hasError ? 'var(--vscode-charts-red, #f14c4c)' : hasRunning ? 'var(--vscode-charts-yellow, #cca700)' : 'var(--vscode-widget-border, rgba(128, 128, 128, 0.5))',
+    backgroundColor: hasError ? 'rgba(241, 76, 76, 0.1)' : hasRunning ? 'rgba(204, 167, 0, 0.1)' : 'var(--vscode-editor-background)',
+    animation: hasRunning ? 'pulse-running 2s infinite ease-in-out' : 'none',
+  };
+
   return (
-    <div className={`flow-node ${sourceClass} ${selected ? 'selected' : ''}`} style={nodeStyle}>
+    <div className={`flow-node ${sourceClass} ${selected ? 'selected' : ''}`} style={dynamicStyle}>
       <Handle type="target" position={Position.Top} />
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-        <div style={{ fontWeight: 600, fontSize: '13px' }}>{count} Similar Steps</div>
+        <div style={{ fontWeight: 600, fontSize: '13px', color: hasError ? 'var(--vscode-charts-red, #f14c4c)' : 'inherit' }}>
+          {hasError && '⚠️ '}
+          {count} Similar Steps
+        </div>
         <div style={{ fontSize: '11px', color: 'var(--vscode-descriptionForeground)' }}>{type}</div>
         <div style={expandButtonStyle}>Click to expand</div>
       </div>

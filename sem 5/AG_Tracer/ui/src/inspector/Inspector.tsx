@@ -9,11 +9,12 @@ interface InspectorProps {
   span: Span;
   toolCalls: ToolCallRecord[];
   fileAccesses: FileAccessRecord[];
+  onClose: () => void;
 }
 
 type TabId = 'content' | 'thinking' | 'tools' | 'diff';
 
-export function Inspector({ span, toolCalls, fileAccesses }: InspectorProps) {
+export function Inspector({ span, toolCalls, fileAccesses, onClose }: InspectorProps) {
   const hasContent = !!span.content;
   const hasThinking = !!span.thinking;
   const hasTools = toolCalls.length > 0;
@@ -70,7 +71,31 @@ export function Inspector({ span, toolCalls, fileAccesses }: InspectorProps) {
         transition={{ duration: 0.15 }}
       >
         <div className="inspector-header">
-          <div className="inspector-title">Step {span.stepIndex} ({span.source})</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button 
+              onClick={onClose}
+              title="Close Inspector"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--vscode-icon-foreground)',
+                cursor: 'pointer',
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '4px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--vscode-toolbar-hoverBackground)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M4.293 3.586l7.414 7.414-.707.707-7.414-7.414.707-.707z" />
+                <path d="M3.586 11.707l7.414-7.414.707.707-7.414 7.414-.707-.707z" />
+              </svg>
+            </button>
+            <div className="inspector-title">Step {span.stepIndex} ({span.source})</div>
+          </div>
           <div className="inspector-tabs">
             <button 
               className={`inspector-tab ${activeTab === 'content' ? 'active' : ''} ${!hasContent ? 'disabled' : ''}`}
