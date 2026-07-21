@@ -4,6 +4,7 @@ import {
   LineChart, Line, CartesianGrid, Legend 
 } from 'recharts';
 import type { Span, ToolCallRecord, FileAccessRecord } from '@ag-tracer/shared';
+import { getThrashInsights } from '../utils/thrashDetection';
 import './Analytics.css';
 
 interface Props {
@@ -42,6 +43,11 @@ export function AnalyticsView({ spans, toolCalls, fileAccesses }: Props) {
       .slice(0, 15); // Top 15 files
   }, [fileAccesses]);
 
+  // 3. Thrash Detection
+  const thrashInsights = useMemo(() => {
+    return getThrashInsights(fileAccesses);
+  }, [fileAccesses]);
+
   // 3. Step Duration
   const durationData = useMemo(() => {
     const data = [];
@@ -65,6 +71,50 @@ export function AnalyticsView({ spans, toolCalls, fileAccesses }: Props) {
 
   return (
     <div className="analytics-container">
+      <div className="analytics-header">
+        <h2>Session Analytics</h2>
+        <div className="analytics-summary">
+          <div className="summary-stat">
+            <span className="stat-value">{spans.length}</span>
+            <span className="stat-label">Total Steps</span>
+          </div>
+          <div className="summary-stat">
+            <span className="stat-value">{toolCalls.length}</span>
+            <span className="stat-label">Tool Calls</span>
+          </div>
+          <div className="summary-stat">
+            <span className="stat-value">{fileData.length}</span>
+            <span className="stat-label">Files Touched</span>
+          </div>
+        </div>
+      </div>
+      
+      {thrashInsights.length > 0 && (
+        <div className="analytics-section">
+          <h3>Session Insights</h3>
+          <div className="insights-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {thrashInsights.map((insight, idx) => {
+              const fileName = insight.filePath.split(/[\\/]/).pop();
+              return (
+                <div key={idx} style={{ 
+                  background: 'var(--vscode-charts-red)', 
+                  color: '#fff',
+                  padding: '8px 12px', 
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <span>🔄</span>
+                  <span><strong>Thrashing Detected:</strong> Agent rewrote <code>{fileName}</code> {insight.writeCount} times starting at step {insight.stepIndex}.</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="analytics-grid">
         <div className="analytics-card">
           <h3>Tool Usage Distribution</h3>

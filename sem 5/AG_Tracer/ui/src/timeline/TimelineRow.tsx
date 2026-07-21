@@ -12,9 +12,10 @@ interface TimelineRowProps {
   onClick: () => void;
   animateEntrance?: boolean;
   onAnimationComplete?: () => void;
+  isThrashing?: boolean;
 }
 
-export function TimelineRow({ span, toolCalls, fileAccesses, isSelected, onClick, animateEntrance, onAnimationComplete }: TimelineRowProps) {
+export function TimelineRow({ span, toolCalls, fileAccesses, isSelected, isThrashing, onClick, animateEntrance, onAnimationComplete }: TimelineRowProps) {
   const sourceClass = getSourceClass(span.source, span.status);
   const rowClass = `timeline-row ${sourceClass} ${isSelected ? 'timeline-row--selected' : ''}`;
   
@@ -28,6 +29,7 @@ export function TimelineRow({ span, toolCalls, fileAccesses, isSelected, onClick
     <>
       <span className="timeline-step-index">{span.stepIndex}</span>
       <span className="timeline-type-badge">{formatStepType(span.type)}</span>
+      {isThrashing && <span className="timeline-type-badge" style={{ backgroundColor: 'var(--vscode-charts-red)', color: '#fff' }} title="Thrash Detected: Repeated writes to the same file in a short window">🔄 Thrash</span>}
       <span className="timeline-content-preview">{preview}</span>
       <div className="timeline-tools">
         {toolCalls.slice(0, 4).map((tc, i) => <ToolCallBadge key={i} toolCall={tc} />)}

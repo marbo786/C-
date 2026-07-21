@@ -37,6 +37,8 @@ export function Timeline({ spans, toolCalls, fileAccesses, selectedIndex, onSele
     return map;
   }, [fileAccesses]);
 
+  const thrashingSteps = useTracerStore(state => state.thrashingSteps);
+
   const filters = useTracerStore(state => state.timelineFilters);
 
   const filteredSpans = useMemo(() => {
@@ -161,6 +163,7 @@ export function Timeline({ spans, toolCalls, fileAccesses, selectedIndex, onSele
                 toolCalls={stepToolCalls}
                 fileAccesses={stepFileAccesses}
                 isSelected={selectedIndex === absoluteIndex}
+                isThrashing={thrashingSteps.has(span.stepIndex)}
                 onClick={() => onSelect(absoluteIndex)}
                 animateEntrance={animationsToRun.has(span.stepIndex)}
                 onAnimationComplete={() => handleAnimationComplete(span.stepIndex)}

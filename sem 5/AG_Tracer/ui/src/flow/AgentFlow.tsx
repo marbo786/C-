@@ -40,11 +40,13 @@ export function AgentFlow() {
     }));
   }, [nodes, selectedIndex, spans]);
 
-  // Fit view ONLY on initial mount/data load
+  // Fit view ONLY on initial mount/data load, unless we have a selected node to pan to
   const onInit = useCallback((instance: ReactFlowInstance) => {
     rfInstanceRef.current = instance;
-    instance.fitView();
-  }, []);
+    if (selectedIndex === null) {
+      instance.fitView();
+    }
+  }, [selectedIndex]);
 
   // Auto-pan on new spans
   const prevSpansLengthRef = useRef(spans.length);
@@ -58,6 +60,42 @@ export function AgentFlow() {
     }
     prevSpansLengthRef.current = spans.length;
   }, [spans.length, nodes]);
+
+  // Auto-pan when selectedIndex changes (Causal Navigation)
+  const initialPanDoneRef = useRef(false);
+  const prevSelectedIndexRef = useRef(selectedIndex);
+  useEffect(() => {
+    const shouldPan = (selectedIndex !== null) && 
+                      (selectedIndex !== prevSelectedIndexRef.current || !initialPanDoneRef.current);
+                      
+    if (shouldPan && rfInstanceRef.current && nodes.length > 0) {
+      const selectedSpan = spans[selectedIndex];
+      if (selectedSpan) {
+        const targetId = `span-${selectedSpan.stepIndex}`;
+        let node = nodes.find(n => n.id === targetId);
+        
+        // If not found, it might be in a collapsed cluster
+        if (!node) {
+          node = nodes.find(n => {
+            if (n.type === 'clusterNode') {
+               const parts = n.id.split('-');
+               const start = parseInt(parts[1]!, 10);
+               const end = parseInt(parts[2]!, 10);
+               return selectedSpan.stepIndex >= start && selectedSpan.stepIndex <= end;
+            }
+            return false;
+          });
+        }
+        
+        if (node && node.position) {
+          const zoom = Math.max(1, rfInstanceRef.current.getZoom());
+          rfInstanceRef.current.setCenter(node.position.x + 100, node.position.y + 100, { zoom, duration: 400 });
+          initialPanDoneRef.current = true;
+        }
+      }
+    }
+    prevSelectedIndexRef.current = selectedIndex;
+  }, [selectedIndex, spans, nodes]);
 
   const onNodeClick: NodeMouseHandler = useCallback((_, node) => {
     if (node.type === 'clusterNode') {

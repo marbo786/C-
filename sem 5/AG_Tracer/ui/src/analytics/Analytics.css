@@ -39,3 +39,54 @@
   margin-bottom: 12px;
   font-style: italic;
 }
+
+.analytics-header {
+  margin-bottom: 24px;
+}
+
+.analytics-header h2 {
+  margin: 0 0 16px 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--vscode-editor-foreground);
+}
+
+.analytics-summary {
+  display: flex;
+  gap: 24px;
+}
+
+.summary-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: var(--vscode-editorWidget-background);
+  border: 1px solid var(--vscode-widget-border);
+  padding: 12px 16px;
+  border-radius: 6px;
+  min-width: 120px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--vscode-textLink-foreground);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: var(--text-sm);
+  color: var(--vscode-descriptionForeground);
+  margin-top: 4px;
+}
+
+.analytics-section {
+  margin-bottom: 24px;
+}
+
+.analytics-section h3 {
+  margin: 0 0 12px 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--vscode-editor-foreground);
+}

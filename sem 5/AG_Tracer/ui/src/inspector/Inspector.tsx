@@ -3,6 +3,7 @@ import Editor from '@monaco-editor/react';
 import type { Span, ToolCallRecord, FileAccessRecord } from '@ag-tracer/shared';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DiffViewer } from './DiffViewer';
+import { useTracerStore } from '../store/useTracerStore';
 import './Inspector.css';
 
 interface InspectorProps {
@@ -15,6 +16,8 @@ interface InspectorProps {
 type TabId = 'content' | 'thinking' | 'tools' | 'diff';
 
 export function Inspector({ span, toolCalls, fileAccesses, onClose }: InspectorProps) {
+  const setViewMode = useTracerStore(state => state.setViewMode);
+  
   const hasContent = !!span.content;
   const hasThinking = !!span.thinking;
   const hasTools = toolCalls.length > 0;
@@ -95,6 +98,24 @@ export function Inspector({ span, toolCalls, fileAccesses, onClose }: InspectorP
               </svg>
             </button>
             <div className="inspector-title">Step {span.stepIndex} ({span.source})</div>
+            <button
+              onClick={() => setViewMode('flow')}
+              title="View in Graph"
+              style={{
+                background: 'var(--vscode-button-secondaryBackground)',
+                color: 'var(--vscode-button-secondaryForeground)',
+                border: '1px solid var(--vscode-button-border, transparent)',
+                borderRadius: '4px',
+                padding: '2px 8px',
+                fontSize: '11px',
+                cursor: 'pointer',
+                marginLeft: '8px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--vscode-button-secondaryHoverBackground)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--vscode-button-secondaryBackground)'}
+            >
+              🕸️ View in Graph
+            </button>
           </div>
           <div className="inspector-tabs">
             <button 

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Span, ToolCallRecord, FileAccessRecord } from '@ag-tracer/shared';
+import { detectThrashing } from '../utils/thrashDetection';
 
 export interface TracerState {
   // Data
@@ -8,6 +9,7 @@ export interface TracerState {
   spans: Span[];
   toolCalls: ToolCallRecord[];
   fileAccesses: FileAccessRecord[];
+  thrashingSteps: Set<number>;
   
   // UI State
   selectedIndex: number | null;
@@ -37,6 +39,7 @@ export const useTracerStore = create<TracerState>()((set, get) => ({
   spans: [],
   toolCalls: [],
   fileAccesses: [],
+  thrashingSteps: new Set(),
   
   selectedIndex: null,
   expandedClusters: {},
@@ -53,6 +56,7 @@ export const useTracerStore = create<TracerState>()((set, get) => ({
     spans: data.spans,
     toolCalls: data.toolCalls,
     fileAccesses: data.fileAccesses,
+    thrashingSteps: detectThrashing(data.fileAccesses),
     selectedIndex: null, // Reset selection on change
     expandedClusters: {}, // Reset expanded state on change
     isLoading: false,
@@ -64,10 +68,14 @@ export const useTracerStore = create<TracerState>()((set, get) => ({
     // Only append if it's for the currently active conversation
     if (state.activeConversationId !== id) return;
     
-    set({
-      spans: [...state.spans, ...data.spans],
-      toolCalls: [...state.toolCalls, ...data.toolCalls],
-      fileAccesses: [...state.fileAccesses, ...data.fileAccesses]
+    set((state) => {
+      const newFileAccesses = [...state.fileAccesses, ...data.fileAccesses];
+      return {
+        spans: [...state.spans, ...data.spans],
+        toolCalls: [...state.toolCalls, ...data.toolCalls],
+        fileAccesses: newFileAccesses,
+        thrashingSteps: detectThrashing(newFileAccesses)
+      };
     });
   },
 
