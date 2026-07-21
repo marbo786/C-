@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext): void {
   const brainPath = join(homedir(), '.gemini', 'antigravity', 'brain');
   const databasePath = join(context.globalStorageUri.fsPath, 'tracer.db');
   
-  // Ensure the storage directory exists synchronously so better-sqlite3 doesn't throw
+  // Ensure the storage directory exists before sql.js attempts to write
   mkdirSync(context.globalStorageUri.fsPath, { recursive: true });
   
   // Track the currently selected conversation
@@ -69,10 +69,6 @@ export function activate(context: vscode.ExtensionContext): void {
         break;
       }
       case 'request:spans': {
-        const fs = require('fs');
-        const path = require('path');
-        const logFile = path.join(__dirname, '..', '..', 'debug-trace.log');
-        
         try {
           activeConversationId = message.conversationId;
           const data = collector?.getSpansByConversation(message.conversationId);
@@ -84,10 +80,11 @@ export function activate(context: vscode.ExtensionContext): void {
               ...data
             });
           }
-        } catch (err: any) {
-          fs.appendFileSync(logFile, `ERROR in request:spans: ${err.message}\n${err.stack}\n`);
-          webviewProvider?.postMessage({ type: 'error', message: 'Failed to load spans: ' + err.message });
-          vscode.window.showErrorMessage('Error fetching spans: ' + err.message);
+        } catch (err: unknown) {
+          const errorMessage = err instanceof Error ? err.message : String(err);
+          console.error('[AG Tracer] Error fetching spans:', err);
+          webviewProvider?.postMessage({ type: 'error', message: 'Failed to load spans: ' + errorMessage });
+          vscode.window.showErrorMessage('Antigravity Tracer: Error fetching spans: ' + errorMessage);
         }
         break;
       }

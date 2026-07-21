@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import type { Span, ToolCallRecord, FileAccessRecord } from '@ag-tracer/shared';
 import './Inspector.css';
@@ -23,8 +23,8 @@ export function Inspector({ span, toolCalls, fileAccesses }: InspectorProps) {
     return 'content';
   });
 
-  // Ensure active tab is valid when span changes
-  useMemo(() => {
+  // Correct the active tab when the selected span changes
+  useEffect(() => {
     if (activeTab === 'content' && !hasContent) {
       setActiveTab(hasThinking ? 'thinking' : hasTools ? 'tools' : 'content');
     } else if (activeTab === 'thinking' && !hasThinking) {
@@ -32,7 +32,7 @@ export function Inspector({ span, toolCalls, fileAccesses }: InspectorProps) {
     } else if (activeTab === 'tools' && !hasTools) {
       setActiveTab(hasContent ? 'content' : hasThinking ? 'thinking' : 'content');
     }
-  }, [span.stepIndex, hasContent, hasThinking, hasTools]); // Only re-run when span changes
+  }, [span.stepIndex, hasContent, hasThinking, hasTools]);
 
   const toolsJson = useMemo(() => {
     if (!hasTools) return '';

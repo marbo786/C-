@@ -69,7 +69,7 @@ export class TracerWebviewProvider {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline' https://fonts.googleapis.com; font-src ${webview.cspSource} https://fonts.gstatic.com; script-src 'nonce-${nonce}' https://cdn.jsdelivr.net; worker-src blob: https://cdn.jsdelivr.net; img-src ${webview.cspSource};">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src ${webview.cspSource} https://fonts.gstatic.com https://cdn.jsdelivr.net data:; script-src 'nonce-${nonce}' https://cdn.jsdelivr.net; worker-src blob:; img-src ${webview.cspSource} data:;">
   <link rel="stylesheet" href="${styleUri}">
   <title>Antigravity Tracer</title>
 </head>

@@ -1,6 +1,6 @@
 import { watch, type FSWatcher } from 'chokidar';
-import { join, basename, dirname } from 'node:path';
-import { existsSync } from 'node:fs';
+import { basename, dirname } from 'node:path';
+
 
 export interface ConversationFolder {
   conversationId: string;

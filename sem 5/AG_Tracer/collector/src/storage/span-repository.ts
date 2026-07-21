@@ -1,4 +1,4 @@
-import type { Database as SqlJsDatabase, Statement } from 'sql.js';
+import type { Database as SqlJsDatabase } from 'sql.js';
 import type { Span } from '@ag-tracer/shared';
 import type { TracerDatabase } from './database.js';
 
