@@ -7,6 +7,7 @@ import { ConversationSelector } from './components/ConversationSelector';
 import { Inspector } from './inspector/Inspector';
 import { useTracerStore } from './store/useTracerStore';
 import { AgentFlow } from './flow/AgentFlow';
+import { AnalyticsView } from './analytics/AnalyticsView';
 import './App.css'; // Let's add some styles for the toggle
 
 export function App() {
@@ -24,7 +25,9 @@ export function App() {
     selectedIndex,
     setSelectedIndex,
     viewMode,
-    setViewMode
+    setViewMode,
+    isAnalyticsOpen,
+    setAnalyticsOpen
   } = useTracerStore();
 
   // Reset selection when conversation changes
@@ -55,6 +58,14 @@ export function App() {
               Flow
             </button>
           </div>
+          <div className="view-toggle" style={{ marginLeft: '8px' }}>
+            <button 
+              className={isAnalyticsOpen ? 'active' : ''} 
+              onClick={() => setAnalyticsOpen(!isAnalyticsOpen)}
+            >
+              📊 Analytics
+            </button>
+          </div>
           <span className="span-count">
             {spans.length > 0 ? `${spans.length} steps` : ''}
           </span>
@@ -76,30 +87,43 @@ export function App() {
             <div className="empty-state-text">Loading...</div>
           </div>
         ) : (
-          <PanelGroup direction="horizontal">
-            <Panel defaultSize={50} minSize={20}>
-              {viewMode === 'timeline' ? (
-                <Timeline
-                  spans={spans}
-                  toolCalls={toolCalls}
-                  fileAccesses={fileAccesses}
-                  selectedIndex={selectedIndex}
-                  onSelect={setSelectedIndex}
-                />
-              ) : (
-                <AgentFlow />
-              )}
+          <PanelGroup direction="vertical">
+            <Panel defaultSize={isAnalyticsOpen ? 60 : 100} minSize={30}>
+              <PanelGroup direction="horizontal">
+                <Panel defaultSize={50} minSize={20}>
+                  {viewMode === 'timeline' ? (
+                    <Timeline
+                      spans={spans}
+                      toolCalls={toolCalls}
+                      fileAccesses={fileAccesses}
+                      selectedIndex={selectedIndex}
+                      onSelect={setSelectedIndex}
+                    />
+                  ) : (
+                    <AgentFlow />
+                  )}
+                </Panel>
+                
+                {selectedSpan && (
+                  <>
+                    <PanelResizeHandle className="resize-handle" />
+                    <Panel defaultSize={50} minSize={20}>
+                      <Inspector
+                        span={selectedSpan}
+                        toolCalls={selectedToolCalls}
+                        fileAccesses={selectedFileAccesses}
+                      />
+                    </Panel>
+                  </>
+                )}
+              </PanelGroup>
             </Panel>
             
-            {selectedSpan && (
+            {isAnalyticsOpen && (
               <>
-                <PanelResizeHandle className="resize-handle" />
-                <Panel defaultSize={50} minSize={20}>
-                  <Inspector
-                    span={selectedSpan}
-                    toolCalls={selectedToolCalls}
-                    fileAccesses={selectedFileAccesses}
-                  />
+                <PanelResizeHandle className="resize-handle horizontal" style={{ height: '4px', cursor: 'row-resize', background: 'var(--vscode-widget-border)' }} />
+                <Panel defaultSize={40} minSize={20}>
+                  <AnalyticsView spans={spans} toolCalls={toolCalls} fileAccesses={fileAccesses} />
                 </Panel>
               </>
             )}

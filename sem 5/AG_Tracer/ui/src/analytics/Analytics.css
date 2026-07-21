@@ -1,0 +1,41 @@
+.analytics-container {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  background-color: var(--vscode-editor-background);
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.analytics-card {
+  background-color: var(--vscode-editorWidget-background);
+  border: 1px solid var(--vscode-widget-border);
+  border-radius: 6px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.analytics-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.analytics-card h3 {
+  margin: 0 0 12px 0;
+  font-size: var(--text-sm);
+  color: var(--vscode-editor-foreground);
+  font-weight: 600;
+}
+
+.analytics-caption {
+  font-size: var(--text-xs);
+  color: var(--vscode-descriptionForeground);
+  margin-top: -8px;
+  margin-bottom: 12px;
+  font-style: italic;
+}

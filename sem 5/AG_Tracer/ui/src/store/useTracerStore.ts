@@ -15,6 +15,7 @@ export interface TracerState {
   isLoading: boolean;
   error: string | null;
   viewMode: 'timeline' | 'flow';
+  isAnalyticsOpen: boolean;
 
   // Actions
   setConversations: (conversations: { id: string, title: string }[]) => void;
@@ -23,6 +24,7 @@ export interface TracerState {
   setSelectedIndex: (index: number | null) => void;
   toggleCluster: (clusterId: string) => void;
   setViewMode: (mode: 'timeline' | 'flow') => void;
+  setAnalyticsOpen: (open: boolean) => void;
   setError: (error: string | null) => void;
   setLoading: (loading: boolean) => void;
 }
@@ -39,6 +41,7 @@ export const useTracerStore = create<TracerState>()((set, get) => ({
   isLoading: true,
   error: null,
   viewMode: 'timeline',
+  isAnalyticsOpen: false,
 
   setConversations: (conversations) => set({ conversations, isLoading: false }),
   
@@ -73,6 +76,7 @@ export const useTracerStore = create<TracerState>()((set, get) => ({
     }
   })),
   setViewMode: (mode) => set({ viewMode: mode }),
+  setAnalyticsOpen: (open) => set({ isAnalyticsOpen: open }),
   setError: (error) => set({ error, isLoading: false }),
   setLoading: (loading) => set({ isLoading: loading }),
 }));
