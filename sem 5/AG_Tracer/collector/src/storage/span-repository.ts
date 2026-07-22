@@ -116,6 +116,35 @@ export class SpanRepository {
     return rows.map(row => row.conversation_id);
   }
 
+  public getLatestSpan(conversationId: string): Span | null {
+    const stmt = this.db.prepare(`
+      SELECT * FROM spans 
+      WHERE conversation_id = $conversationId 
+      ORDER BY step_index DESC LIMIT 1
+    `);
+    stmt.bind({ $conversationId: conversationId });
+    let result: Span | null = null;
+    if (stmt.step()) {
+      result = this.mapRowToSpan(stmt.getAsObject() as unknown as SpanRow);
+    }
+    stmt.free();
+    return result;
+  }
+
+  public updateSpanStatus(conversationId: string, stepIndex: number, newStatus: string): void {
+    const stmt = this.db.prepare(`
+      UPDATE spans 
+      SET status = $newStatus 
+      WHERE conversation_id = $conversationId AND step_index = $stepIndex
+    `);
+    stmt.run({
+      $conversationId: conversationId,
+      $stepIndex: stepIndex,
+      $newStatus: newStatus
+    });
+    stmt.free();
+  }
+
   private mapRowToSpan(row: SpanRow): Span {
     return {
       conversationId: row.conversation_id,

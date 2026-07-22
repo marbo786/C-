@@ -4,6 +4,7 @@ import type { Span, ToolCallRecord, FileAccessRecord } from '@ag-tracer/shared';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DiffViewer } from './DiffViewer';
 import { useTracerStore } from '../store/useTracerStore';
+import { TruncationIndicator } from '../timeline/TruncationIndicator';
 import './Inspector.css';
 
 interface InspectorProps {
@@ -98,23 +99,31 @@ export function Inspector({ span, toolCalls, fileAccesses, onClose }: InspectorP
               </svg>
             </button>
             <div className="inspector-title">Step {span.stepIndex} ({span.source})</div>
+            <TruncationIndicator truncatedFields={span.truncatedFields} />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}>
             <button
               onClick={() => setViewMode('flow')}
               title="View in Graph"
               style={{
-                background: 'var(--vscode-button-secondaryBackground)',
-                color: 'var(--vscode-button-secondaryForeground)',
-                border: '1px solid var(--vscode-button-border, transparent)',
-                borderRadius: '4px',
-                padding: '2px 8px',
-                fontSize: '11px',
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--vscode-icon-foreground)',
                 cursor: 'pointer',
-                marginLeft: '8px'
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '4px'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--vscode-button-secondaryHoverBackground)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--vscode-button-secondaryBackground)'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--vscode-toolbar-hoverBackground)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-              🕸️ View in Graph
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M12.5 3a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0 1a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1zm-9 3a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0 1a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1zm7 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0 1a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1z" />
+                <path d="M4.8 8.9l4.9 2.7.5-.9-4.9-2.7-.5.9zM4.9 7.3l6.5-2.6-.4-.9-6.5 2.6.4.9z" />
+              </svg>
             </button>
           </div>
           <div className="inspector-tabs">
@@ -149,6 +158,11 @@ export function Inspector({ span, toolCalls, fileAccesses, onClose }: InspectorP
           </div>
         </div>
         <div className="inspector-body">
+          {activeTab === 'thinking' && (
+            <div style={{ padding: '8px 16px', fontSize: '11px', color: 'var(--vscode-descriptionForeground)', borderBottom: '1px solid var(--vscode-widget-border)', fontStyle: 'italic' }}>
+              Antigravity's own recorded summary — not a verified account of the model's reasoning
+            </div>
+          )}
           {activeTab === 'diff' && hasDiff ? (() => {
             const writeTool = writeTools[0]!;
             const args = writeTool.toolArgs as any;

@@ -70,8 +70,19 @@ export const useTracerStore = create<TracerState>()((set, get) => ({
     
     set((state) => {
       const newFileAccesses = [...state.fileAccesses, ...data.fileAccesses];
+      
+      const newSpans = [...state.spans];
+      for (const span of data.spans) {
+        const existingIdx = newSpans.findIndex(s => s.stepIndex === span.stepIndex);
+        if (existingIdx !== -1) {
+          newSpans[existingIdx] = span;
+        } else {
+          newSpans.push(span);
+        }
+      }
+
       return {
-        spans: [...state.spans, ...data.spans],
+        spans: newSpans,
         toolCalls: [...state.toolCalls, ...data.toolCalls],
         fileAccesses: newFileAccesses,
         thrashingSteps: detectThrashing(newFileAccesses)

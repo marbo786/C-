@@ -22,6 +22,8 @@ export class Collector {
   private pollIntervalMs: number = 1000;
   private pollTimer: ReturnType<typeof setInterval> | null = null;
   private events: CollectorEvents;
+  private tailerLastActivity: Map<string, number> = new Map();
+  private readonly TIMEOUT_MS = 30000;
 
   constructor(brainPath: string, databasePath: string, events: CollectorEvents) {
     this.database = new TracerDatabase(databasePath);
@@ -108,7 +110,24 @@ export class Collector {
     for (const [conversationId, tailer] of this.tailers.entries()) {
       try {
         const results = tailer.readNewLines();
-        if (results.length === 0) continue;
+        if (results.length === 0) {
+          const lastActivity = this.tailerLastActivity.get(conversationId) || Date.now();
+          if (Date.now() - lastActivity > this.TIMEOUT_MS) {
+            const latestSpan = this.spanRepo.getLatestSpan(conversationId);
+            if (latestSpan && latestSpan.status === 'RUNNING') {
+              this.database.transaction(() => {
+                this.spanRepo.updateSpanStatus(conversationId, latestSpan.stepIndex, 'INTERRUPTED');
+              });
+              this.database.save();
+              latestSpan.status = 'INTERRUPTED';
+              this.events.onSpansIngested(conversationId, [latestSpan], [], []);
+              this.tailerLastActivity.set(conversationId, Date.now());
+            }
+          }
+          continue;
+        }
+
+        this.tailerLastActivity.set(conversationId, Date.now());
 
         const newSpans: Span[] = [];
         const newToolCalls: ToolCallRecord[] = [];

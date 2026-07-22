@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import type { Span } from '@ag-tracer/shared';
 import '../styles/timeline.css'; // Reuse timeline styles for badges
+import { TruncationIndicator } from '../timeline/TruncationIndicator';
 
 export const SpanNode = memo(({ data, selected }: NodeProps) => {
   const span = data.span as Span;
@@ -32,6 +33,7 @@ export const SpanNode = memo(({ data, selected }: NodeProps) => {
       <div style={headerStyle}>
         <span className="timeline-step-index">#{span.stepIndex}</span>
         <span className="timeline-type-badge">{span.type}</span>
+        <TruncationIndicator truncatedFields={span.truncatedFields} />
       </div>
       <div style={contentStyle}>
         {span.source === 'USER_EXPLICIT' ? 'User Request' : 

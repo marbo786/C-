@@ -133,7 +133,7 @@ export function AnalyticsView({ spans, toolCalls, fileAccesses }: Props) {
         </div>
 
         <div className="analytics-card">
-          <h3>Top File Accesses</h3>
+          <h3>File Access Frequency</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={fileData} layout="vertical" margin={{ left: 50, right: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--vscode-widget-border)" horizontal={false} />
